@@ -1,0 +1,51 @@
+name: Template with SSH Relay
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run with debugging enabled'
+        required: false
+        default: false
+
+env:
+  TZ: Asia/Shanghai
+  FRP_VER: 0.69.1
+  OS_VER: linux
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@main
+      
+    - name: Initialization environment
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo timedatectl set-timezone "$TZ"
+
+    - name: Relay SSH
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      run: |
+        sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+        echo -e "${{ secrets.USER_PWD }}" | sudo passwd runner
+        
+    - name: Run Frp
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      run: |
+        curl -LO "https://github.com/fatedier/frp/releases/download/v"$FRP_VER"/frp_"$FRP_VER"_"$OS_VER"_amd64.tar.gz"
+        tar -xzf frp_"$FRP_VER"_"$OS_VER"_amd64.tar.gz
+        cd frp_"$FRP_VER"_"$OS_VER"_amd64
+        chmod +x frpc
+        ./frpc -c ../frp/frpc.toml
+        
+#    - name: if failure
+#      if: ${{ failure() }}
+#      run: |
+        
+    
