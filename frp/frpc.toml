@@ -1,0 +1,18 @@
+user = "s-0001yebfa4ab08"
+auth.token = "bfa4909f726fab08"
+
+serverAddr = "frp-fly.com"
+serverPort = 8088
+
+transport.tls.enable = false
+transport.tls.disableCustomTLSFirstByte = false
+
+[[proxies]]
+# id = 13890808
+name = "WL_SSH"
+type = "tcp"
+
+localIP = "127.0.0.1"
+localPort = 22
+remotePort = 13618
+
