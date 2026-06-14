@@ -4,6 +4,7 @@ auth.token = "bfa4909f726fab08"
 serverAddr = "frp-fly.com"
 serverPort = 8088
 
+loginFailExit = false
 transport.tls.enable = false
 transport.tls.disableCustomTLSFirstByte = false
 
