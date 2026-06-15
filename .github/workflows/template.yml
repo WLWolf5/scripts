@@ -33,7 +33,7 @@ jobs:
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       run: |
         sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-        echo -e "${{ secrets.USER_PWD }}" | sudo passwd runner
+        echo -e "${{ secrets.USER_PWD }}\n${{ secrets.USER_PWD }}" | sudo passwd runner
         
     - name: Run Frp
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
