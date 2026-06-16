@@ -76,7 +76,7 @@ jobs:
     - name: Load extra packages
       working-directory: ./mywrt
       run: |
-        cp -r luci {$REPO_DIR}/package/addons
+        cp -r luci ${REPO_DIR}/package/addons
 
     - name: Relay SSH
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
