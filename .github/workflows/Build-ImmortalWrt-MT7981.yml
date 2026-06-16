@@ -60,11 +60,6 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
-    - name: Load .config file
-      working-directory: ./${{ env.REPO_NAME }}
-      run: |
-        cp defconfig/mt7981-ax3000.config .config
-
     - name: Load custom scripts
       working-directory: ./mywrt/custom
       run: |
@@ -77,6 +72,13 @@ jobs:
       working-directory: ./mywrt
       run: |
         cp -r luci ${REPO_DIR}/package/addons
+
+    - name: Load .config file
+      working-directory: ./${{ env.REPO_NAME }}
+      run: |
+        cp defconfig/mt7981-ax3000.config .config
+        make defconfig
+        patch .config < ../mywrt/patch/config.patch
 
     - name: Relay SSH
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
