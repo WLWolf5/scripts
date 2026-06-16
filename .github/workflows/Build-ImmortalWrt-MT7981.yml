@@ -52,12 +52,11 @@ jobs:
       run: |
         git clone --single-branch --depth 1 --filter=blob:none $REPO_URL
         echo "$REPO_URL" | awk -F'/' '{print "REPO_NAME="$NF}' >> $GITHUB_ENV
-        cd $REPO_NAME
-        echo "REPO_DIR=$(pwd)" >> $GITHUB_ENV
 
     - name: Install feeds
       working-directory: ./${{ env.REPO_NAME }}
       run: |
+        echo "REPO_DIR=$(pwd)" >> $GITHUB_ENV
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
@@ -77,7 +76,7 @@ jobs:
     - name: Load extra packages
       working-directory: ./mywrt
       run: |
-        cp -r luci ${REPO_DIR}/package/addons
+        cp -r luci {$REPO_DIR}/package/addons
 
     - name: Relay SSH
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
@@ -88,9 +87,9 @@ jobs:
     - name: Run Frp
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       run: |
-        curl -LO "https://github.com/fatedier/frp/releases/download/v"$FRP_VER"/frp_"$FRP_VER"_"$OS_VER"_amd64.tar.gz"
-        tar -xzf frp_"$FRP_VER"_"$OS_VER"_amd64.tar.gz
-        cd frp_"$FRP_VER"_"$OS_VER"_amd64
+        curl -LO "https://github.com/fatedier/frp/releases/download/v${FRP_VER}/frp_${FRP_VER}_${OS_VER}_amd64.tar.gz"
+        tar -xzf frp_${FRP_VER}_${OS_VER}_amd64.tar.gz
+        cd frp_${FRP_VER}_${OS_VER}_amd64
         chmod +x frpc
         ./frpc -c ../frp/frpc.toml
 
