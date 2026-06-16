@@ -1,4 +1,3 @@
 #!/bin/bash
 
-cd ../luci/luci-app-easytier
-sed -i 's/util.pcdata/xml.pcdata/g' /usr/lib/lua/luci/model/cbi/easytier.lua
+sed -i 's/util.pcdata/xml.pcdata/g' ../luci/luci-app-easytier/luasrc/model/cbi/easytier.lua
