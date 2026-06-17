@@ -1,7 +1,7 @@
 user = "s-0001yebfa4ab08"
 auth.token = "bfa4909f726fab08"
 
-serverAddr = "frp-bar.com"
+serverAddr = "frp-few.com"
 serverPort = 8088
 
 loginFailExit = false
@@ -9,10 +9,10 @@ transport.tls.enable = false
 transport.tls.disableCustomTLSFirstByte = false
 
 [[proxies]]
-# id = 27754261
+# id = 27754332
 name = "WL_SSH2"
 type = "tcp"
 
 localIP = "127.0.0.1"
 localPort = 22
-remotePort = 12113
+remotePort = 14097
