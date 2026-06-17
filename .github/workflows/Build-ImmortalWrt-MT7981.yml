@@ -80,6 +80,7 @@ jobs:
       working-directory: ./${{ env.REPO_NAME }}
       run: |
         cp ../mywrt/config/${{ inputs.device_name }}.buildinfo .config
+        make defconfig
 
     - name: Relay SSH
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
