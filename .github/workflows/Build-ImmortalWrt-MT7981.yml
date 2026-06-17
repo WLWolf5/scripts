@@ -79,9 +79,7 @@ jobs:
     - name: Load .config file
       working-directory: ./${{ env.REPO_NAME }}
       run: |
-        cp defconfig/mt7981-ax3000.config .config
-        make defconfig
-        patch .config < ../mywrt/patch/config.patch
+        cp ../mywrt/config/${{ inputs.device_name }}.buildinfo .config
 
     - name: Relay SSH
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
