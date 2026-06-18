@@ -17,6 +17,11 @@ on:
         description: 'Run with debugging enabled'
         required: false
         default: false
+      clean_cache:
+        type: boolean
+        description: 'Try clean cache if you have any compile problem'
+        required: false
+        default: false
       upload_artifacts:
         type: boolean
         description: 'Upload firmware to artifacts'
@@ -98,12 +103,12 @@ jobs:
         ./frpc -c ../frp/frpc.toml
 
     - name: Build/Load Cache
-      uses: stupidloud/cachewrtbuild@main
+      uses: WLWolf5/cachewrtbuild@main
       with:
         ccache: 'true'
         toolchain: 'true'
         mixkey: 'mediatek'
-        clean: 'false'
+        clean: '${{ inputs.clean_cache }}'
         prefix: ${{ github.workspace }}/${{ env.REPO_NAME }}
 
     - name: Download packages
@@ -134,7 +139,7 @@ jobs:
     - name: Generate release tag
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_releases }}
       run: |
-        echo "RELEASE_TAG=${REPO_NAME}_${DEVICE_NAME}" >> $GITHUB_ENV
+        echo "RELEASE_TAG=${REPO_NAME}_${DEVICE_NAME}-${FILE_DATE}" >> $GITHUB_ENV
         touch release.txt
 
     - name: Upload firmware to release
