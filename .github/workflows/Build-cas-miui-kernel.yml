@@ -41,6 +41,7 @@ on:
 env:
   REPO_URL: https://github.com/liyafe1997/kernel_xiaomi_sm8250_mod
   DEVICE_NAME: ${{ inputs.device_name }}
+  WORKDIR: ${{ github.workspace }}
   TZ: Asia/Shanghai
   FRP_VER: 0.71.0
   OS_VER: linux
@@ -82,6 +83,17 @@ jobs:
         chmod +x frpc
         ./frpc -c ../frp/frpc.toml
 
+    - name: Make CacheKey
+      working-directory: ./${{ env.REPO_NAME }}
+      run: |
+        mkdir toolchain
+        cd toolchain
+        echo "#\!/bin/bash" > download.sh
+        echo "${WORKDIR}/utils/svn.sh https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 android-14.0.0_r75 clang-r487747c" >> download.sh
+        echo "curl -LO https://gitlab.arm.com/api/v4/projects/tooling%2Fgnu-toolchains-for-arm/packages/generic/gnu-toolchain/15.3.rel1/arm-gnu-toolchain-15.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz" >> download.sh
+        echo "curl -LO https://gitlab.arm.com/api/v4/projects/tooling%2Fgnu-toolchains-for-arm/packages/generic/gnu-toolchain/15.3.rel1/arm-gnu-toolchain-15.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz" >> download.sh
+        md5sum download.sh | cut -b -7 > ../cache.key
+
     - name: Load Cache
       uses: WLWolf5/cachewrtbuild@android-kernel
       with:
@@ -95,18 +107,16 @@ jobs:
       if: ${{ !env.CACHE_HIT }}
       working-directory: ./${{ env.REPO_NAME }}
       run: |
-        mkdir toolchain
         cd toolchain
-        ./utils/svn.sh https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 android-14.0.0_r75 clang-r487747c
-        curl -LO https://gitlab.arm.com/api/v4/projects/tooling%2Fgnu-toolchains-for-arm/packages/generic/gnu-toolchain/15.3.rel1/arm-gnu-toolchain-15.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
-        curl -LO https://gitlab.arm.com/api/v4/projects/tooling%2Fgnu-toolchains-for-arm/packages/generic/gnu-toolchain/15.3.rel1/arm-gnu-toolchain-15.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz
-        ls > ../cache.key
+        chmod +x download.sh
+        ./download.sh
         tar -xJf arm-gnu-toolchain-15.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
         tar -xJf arm-gnu-toolchain-15.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz
 
     - name: Build Kernel
       working-directory: ./${{ env.REPO_NAME }}
       run: |
+        cp -f ${WORKDIR}/android/kernel/build.sh .
         chmod +x build.sh
         if [ inputs.ksu_enabled ]; then
           ./build.sh ${DEVICE_NAME} ksu
