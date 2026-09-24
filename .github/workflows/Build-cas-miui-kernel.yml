@@ -94,7 +94,8 @@ jobs:
         echo "curl -LO https://gitlab.arm.com/api/v4/projects/tooling%2Fgnu-toolchains-for-arm/packages/generic/gnu-toolchain/15.3.rel1/arm-gnu-toolchain-15.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz" >> download.sh
         md5sum download.sh | cut -b -7 > ../cache.key
 
-    - name: Load Cache
+    - name: Cache
+      id: cache
       uses: WLWolf5/cachewrtbuild@android-kernel
       with:
         ccache: 'true'
@@ -104,7 +105,7 @@ jobs:
         prefix: ${{ github.workspace }}/${{ env.REPO_NAME }}
 
     - name: Download Clang & GCC
-      if: ${{ !env.CACHE_HIT }}
+      if: steps.cache.outputs.CACHE_STATE != 'hit'
       working-directory: ./${{ env.REPO_NAME }}
       run: |
         cd toolchain
