@@ -12,6 +12,6 @@ git clone -b $branch --single-branch --depth 1 --filter=blob:none --sparse $rurl
 cd $localdir
 git sparse-checkout init --cone
 git sparse-checkout set $filename
-mv -n $filename ../../luci
+mv -n $filename ..
 cd ..
 rm -rf $localdir
