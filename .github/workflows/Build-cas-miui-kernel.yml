@@ -68,21 +68,6 @@ jobs:
         git clone --single-branch --depth 1 $REPO_URL
         echo "$REPO_URL" | awk -F'/' '{print "REPO_NAME="$NF}' >> $GITHUB_ENV
 
-    - name: Relay SSH
-      if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
-      run: |
-        sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
-        echo -e "${{ secrets.RUNNER_PWD }}\n${{ secrets.RUNNER_PWD }}" | sudo passwd runner
-
-    - name: Run Frp
-      if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
-      run: |
-        curl -LO "https://github.com/fatedier/frp/releases/download/v${FRP_VER}/frp_${FRP_VER}_${OS_VER}_amd64.tar.gz"
-        tar -xzf frp_${FRP_VER}_${OS_VER}_amd64.tar.gz
-        cd frp_${FRP_VER}_${OS_VER}_amd64
-        chmod +x frpc
-        ./frpc -c ../frp/frpc.toml
-
     - name: Make Cache Key
       working-directory: ./${{ env.REPO_NAME }}
       run: |
@@ -113,6 +98,21 @@ jobs:
         ./download.sh
         tar -xJf arm-gnu-toolchain-15.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
         tar -xJf arm-gnu-toolchain-15.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz
+
+    - name: Relay SSH
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      run: |
+        sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+        echo -e "${{ secrets.RUNNER_PWD }}\n${{ secrets.RUNNER_PWD }}" | sudo passwd runner
+
+    - name: Run Frp
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      run: |
+        curl -LO "https://github.com/fatedier/frp/releases/download/v${FRP_VER}/frp_${FRP_VER}_${OS_VER}_amd64.tar.gz"
+        tar -xzf frp_${FRP_VER}_${OS_VER}_amd64.tar.gz
+        cd frp_${FRP_VER}_${OS_VER}_amd64
+        chmod +x frpc
+        ./frpc -c ../frp/frpc.toml
 
     - name: Build Kernel
       working-directory: ./${{ env.REPO_NAME }}
