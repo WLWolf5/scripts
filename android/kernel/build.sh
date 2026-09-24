@@ -318,6 +318,35 @@ scripts/config --file out/.config \
     -e BOOTUP_RECLAIM \
     -e MI_RECLAIM \
     -e RTMM \
+    -e PID_NS \                                                                                                                                                                   -e IPC_NS \
+    -e USER_NS \
+    -e SYSCTL \
+    -e SYSVIPC \
+    -e POSIX_MQUEUE \
+    -e DEVTMPFS \
+    -e NETFILTER_XT_MATCH_COMMENT \
+-e NETFILTER_XT_MATCH_STATE \
+-e NETFILTER_XT_MATCH_CONNTRACK \
+-e NETFILTER_XT_MATCH_MULTIPORT \
+-e NETFILTER_XT_MATCH_HL \
+-e NETFILTER_XT_TARGET_REJECT \
+-e IP_NF_TARGET_REJECT \
+-e NETFILTER_XT_TARGET_LOG \
+-e IP_NF_TARGET_ULOG \
+-e NETFILTER_XT_MATCH_RECENT \
+-e NETFILTER_XT_MATCH_LIMIT \
+-e NETFILTER_XT_MATCH_HASHLIMIT \
+-e NETFILTER_XT_MATCH_OWNER \
+-e NETFILTER_XT_MATCH_PKTTYPE \
+-e NETFILTER_XT_MATCH_MARK \
+-e NETFILTER_XT_TARGET_MARK \
+-e IP_SET \
+-e IP_SET_HASH_IP \
+-e IP_SET_HASH_NET \
+-e NETFILTER_XT_SET \
+-e NETFILTER_NETLINK_QUEUE \
+-e NETFILTER_NETLINK_LOG \
+-e NETFILTER_XT_TARGET_NFLOG
 
 make $MAKE_ARGS -j$(nproc)
 

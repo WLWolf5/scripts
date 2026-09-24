@@ -118,7 +118,7 @@ jobs:
       run: |
         cp -f ${WORKDIR}/android/kernel/build.sh .
         chmod +x build.sh
-        if [ inputs.ksu_enabled ]; then
+        if [ ${{ inputs.ksu_enabled }} ]; then
           ./build.sh ${DEVICE_NAME} ksu
         else
           ./build.sh ${DEVICE_NAME}
