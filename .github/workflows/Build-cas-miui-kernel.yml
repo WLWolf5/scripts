@@ -105,7 +105,7 @@ jobs:
         prefix: ${{ github.workspace }}/${{ env.REPO_NAME }}
 
     - name: Download Clang & GCC
-      if: steps.cache.outputs.CACHE_STATE != 'hit'
+      if: steps.cache.outputs.hit != '1'
       working-directory: ./${{ env.REPO_NAME }}
       run: |
         cd toolchain
