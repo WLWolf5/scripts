@@ -71,13 +71,10 @@ jobs:
     - name: Make Cache Key
       working-directory: ./${{ env.REPO_NAME }}
       run: |
-        mkdir toolchain
-        cd toolchain
-        echo "#\!/bin/bash" > download.sh
-        echo "${WORKDIR}/utils/svn.sh https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 android-14.0.0_r75 clang-r487747c" >> download.sh
+        echo "${WORKDIR}/utils/svn.sh https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 android-14.0.0_r75 clang-r487747c" > download.sh
         echo "curl -LO https://gitlab.arm.com/api/v4/projects/tooling%2Fgnu-toolchains-for-arm/packages/generic/gnu-toolchain/15.3.rel1/arm-gnu-toolchain-15.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz" >> download.sh
         echo "curl -LO https://gitlab.arm.com/api/v4/projects/tooling%2Fgnu-toolchains-for-arm/packages/generic/gnu-toolchain/15.3.rel1/arm-gnu-toolchain-15.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz" >> download.sh
-        md5sum download.sh | cut -b -7 > ../cache.key
+        md5sum download.sh | cut -b -7 > cache.key
 
     - name: Cache
       id: cache
@@ -93,11 +90,13 @@ jobs:
       if: steps.cache.outputs.hit != '1'
       working-directory: ./${{ env.REPO_NAME }}
       run: |
-        cd toolchain
         chmod +x download.sh
         ./download.sh
-        tar -xJf arm-gnu-toolchain-15.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
-        tar -xJf arm-gnu-toolchain-15.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz
+        mkdir toolchain
+        cd toolchain
+        mv ../clang-r487747c .
+        tar -xJf ../arm-gnu-toolchain-15.3.rel1-x86_64-aarch64-none-linux-gnu.tar.xz
+        tar -xJf ../arm-gnu-toolchain-15.3.rel1-x86_64-arm-none-linux-gnueabihf.tar.xz
 
     - name: Relay SSH
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
