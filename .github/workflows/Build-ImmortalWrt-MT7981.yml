@@ -36,7 +36,7 @@ on:
 env:
   REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-6.6
   TZ: Asia/Shanghai
-  FRP_VER: 0.71.0
+  FRP_VER: 0.71.1
   OS_VER: linux
 
 jobs:
@@ -69,17 +69,15 @@ jobs:
         ./scripts/feeds install -a
 
     - name: Load custom scripts
-      working-directory: ./mywrt/custom
+      working-directory: ./${{ env.REPO_NAME }}
       run: |
+        cp ../mywrt/custom/*.sh .
+        cp ../utils/svn.sh .
+        chmod +x svn.sh
         chmod +x third-party.sh
-        ./third-party.sh
         chmod +x patch.sh
+        ./third-party.sh
         ./patch.sh
-
-    - name: Load extra packages
-      working-directory: ./mywrt
-      run: |
-        cp -r luci ${REPO_DIR}/package/addons
 
     - name: Load .config file
       working-directory: ./${{ env.REPO_NAME }}
