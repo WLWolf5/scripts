@@ -8,16 +8,39 @@ on:
         type: boolean
         description: 'Run with debugging enabled'
         required: false
-        default: false
+        default: true
+      system:
+        type: choice
+        options:
+          - ubuntu
+         # - windows
+         # - macos
+        description: 'Choose a system'
+        required: true
+        default: ubuntu
+      run_ver:
+        type: choice
+        options:
+          - latest
+          - 26.04
+          - 24.04
+          - 22.04
+        description: 'Choose a version'
+        required: true
+        default: latest
+      arch:
+        type: string
+        description: 'Arm64 system input "-arm"'
+        required: false
+      
 
 env:
   TZ: Asia/Shanghai
-  FRP_VER: 0.71.0
-  OS_VER: linux
+  FRP_VER: 0.72.0
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.system }}-${{ inputs.run_ver }}${{ inputs.arch }}
 
     steps:
     - name: Checkout
@@ -28,6 +51,17 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo timedatectl set-timezone "$TZ"
+        if [[ "$(arch)" == "aarch64" ]]; then
+            echo "ARCH=arm64" >> $GITHUB_ENV
+        else
+            echo "ARCH=amd64" >> $GITHUB_ENV
+        fi
+        if [[ "${{ inputs.system }}" == "ubuntu" ]]; then
+            echo "OS=linux" >> $GITHUB_ENV
+        else
+            echo "OS=unknow" >> $GITHUB_ENV
+        fi
+        
 
     - name: Relay SSH
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
@@ -38,9 +72,9 @@ jobs:
     - name: Run Frp
       if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       run: |
-        curl -LO "https://github.com/fatedier/frp/releases/download/v"$FRP_VER"/frp_"$FRP_VER"_"$OS_VER"_amd64.tar.gz"
-        tar -xzf frp_"$FRP_VER"_"$OS_VER"_amd64.tar.gz
-        cd frp_"$FRP_VER"_"$OS_VER"_amd64
+        curl -LO "https://github.com/fatedier/frp/releases/download/v"$FRP_VER"/frp_"$FRP_VER"_${{ env.OS }}_${{ env.ARCH }}.tar.gz"
+        tar -xzf frp_"$FRP_VER"_${{ env.OS }}_${{ env.ARCH }}.tar.gz
+        cd frp_"$FRP_VER"_${{ env.OS }}_${{ env.ARCH }}
         chmod +x frpc
         ./frpc -c ../frp/frpc.toml
         
