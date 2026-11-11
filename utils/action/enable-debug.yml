@@ -1,0 +1,31 @@
+name: 'enable debug'
+description: 'Enable ssh debug'
+inputs:
+  runner-pwd:
+    description: 'runner-pwd'
+    required: true
+  frp-ver:
+    description: 'frp-ver'
+    required: true
+  os:
+    description: 'os'
+    required: true
+  arch:
+    description: 'arch'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Relay SSH
+      run: |
+        sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+        echo -e "${{ inputs.runner-pwd }}\n${{ inputs.runner-pwd }}" | sudo passwd runner
+        
+    - name: Run Frp
+      run: |
+        curl -LO "https://github.com/fatedier/frp/releases/download/v${{ inputs.frp-ver }}/frp_${{ inputs.frp-ver }}_${{ inputs.os }}_${{ inputs.arch }}.tar.gz"
+        tar -xzf frp_${{ inputs.frp-ver }}_${{ inputs.os }}_${{ inputs.arch }}.tar.gz
+        cd frp_${{ inputs.frp-ver }}_${{ inputs.os }}_${{ inputs.arch }}
+        chmod +x frpc
+        ./frpc -c ../frp/frpc.toml
